@@ -21,17 +21,23 @@ type Training struct {
 func (t *Training) Parse(datastring string) (err error) {
 	slice := strings.Split(datastring, ",")
 	if len(slice) != 3 {
-		return errors.New("invalid string format / неверный формат строки")
+		return errors.New("invalid string format")
 	}
 	steps, err := strconv.Atoi(slice[0])
 	if err != nil {
 		return err
+	}
+	if steps <= 0 {
+		return errors.New("invalid steps")
 	}
 	t.Steps = steps
 
 	duration, err := time.ParseDuration(slice[2])
 	if err != nil {
 		return err
+	}
+	if duration <= 0 {
+		return errors.New("invalid duration")
 	}
 	t.Duration = duration
 	t.TrainingType = slice[1]
@@ -55,9 +61,9 @@ func (t Training) ActionInfo() (string, error) {
 			return "", err
 		}
 	default:
-		return "", errors.New("неизвестный тип тренировки")
+		return "", errors.New("unknown type of training")
 	}
-	info := fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f",
+	info := fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f\n",
 		t.TrainingType, t.Duration.Hours(), dist, ms, callories)
 
 	return info, nil
